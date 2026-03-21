@@ -29,6 +29,10 @@ jobs:
           8.0.x
           10.0.x
 
+    # Compile the de4dot submodule so its DLLs are available for the main build
+    - name: Build de4dot
+      run: dotnet build de4dot/de4dot.sln -c Release
+
     - name: Build
       run: .\build.bat all
 
