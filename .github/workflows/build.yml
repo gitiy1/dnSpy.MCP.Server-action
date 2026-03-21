@@ -31,8 +31,8 @@ jobs:
     #     cache: true
 
     # Compile the de4dot submodule so its DLLs are available for the main build
-    - name: Build de4dot
-      run: dotnet build de4dot/de4dot.sln -c Release
+    # - name: Build de4dot
+    #   run: dotnet build de4dot/de4dot.sln -c Release
 
     - name: Build
       run: |
