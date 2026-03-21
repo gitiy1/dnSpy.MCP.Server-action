@@ -1,0 +1,47 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          repository: geocine/dnSpy.MCP.Server
+          submodules: recursive
+          fetch-depth: 0
+
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: |
+      #       8.0.x
+      #       10.0.x
+
+      - name: Prepare de4dotEx artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .\artifacts\de4dotEx\net8 | Out-Null
+          dotnet publish .\vendors\de4dotEx\de4dot.cui\de4dot.cui.csproj `
+            -c Release `
+            -f net8.0 `
+            -o .\artifacts\de4dotEx\net8
+
+      - name: Build
+        shell: cmd
+        run: .\build.bat all
+
+      - name: Upload MCP extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dnSpy.MCP.Server
+          # path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/Extensions/dnSpy.MCP.Server/**
+          path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/**
