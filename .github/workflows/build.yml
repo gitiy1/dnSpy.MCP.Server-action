@@ -2,13 +2,9 @@ name: Build and Release
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   pull_request:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -16,31 +12,35 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-      with:
-        repository: geocine/dnSpy.MCP.Server
-        submodules: recursive
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          repository: geocine/dnSpy.MCP.Server
+          submodules: recursive
+          fetch-depth: 0
 
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v4
-    #   with:
-    #     dotnet-version: |
-    #       8.0.x
-    #       10.0.x
-    #     cache: true
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: |
+      #       8.0.x
+      #       10.0.x
 
-    # Compile the de4dot submodule so its DLLs are available for the main build
-    # - name: Build de4dot
-    #   run: dotnet build de4dot/de4dot.sln -c Release
+      - name: Prepare de4dotEx artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .\artifacts\de4dotEx\net8 | Out-Null
+          dotnet publish .\vendors\de4dotEx\de4dot.cui\de4dot.cui.csproj `
+            -c Release `
+            -f net8.0 `
+            -o .\artifacts\de4dotEx\net8
 
-    - name: Build
-      run: |
-        (Get-Content extensions\dnSpy.MCP.Server\dnSpy.MCP.Server.csproj) -replace "artifacts\\de4dotEx\\net8\\", "artifacts\\de4dotEx\\net8" | Set-Content extensions\dnSpy.MCP.Server\dnSpy.MCP.Server.csproj
-        .\build.bat all
+      - name: Build
+        shell: cmd
+        run: .\build.bat all
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: dnSpy.MCP.Server
-        path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/
+      - name: Upload MCP extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dnSpy.MCP.Server
+          path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/Extensions/dnSpy.MCP.Server/**
