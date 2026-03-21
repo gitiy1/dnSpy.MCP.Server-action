@@ -43,4 +43,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dnSpy.MCP.Server
-          path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/Extensions/dnSpy.MCP.Server/**
+          # path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/Extensions/dnSpy.MCP.Server/**
+          path: hosts/dnSpy/dnSpy/dnSpy/bin/Release/net10.0-windows/**
