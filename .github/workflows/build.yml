@@ -22,20 +22,22 @@ jobs:
         repository: geocine/dnSpy.MCP.Server
         submodules: recursive
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: |
-          8.0.x
-          10.0.x
-        cache: true
+    # - name: Setup .NET
+    #   uses: actions/setup-dotnet@v4
+    #   with:
+    #     dotnet-version: |
+    #       8.0.x
+    #       10.0.x
+    #     cache: true
 
     # Compile the de4dot submodule so its DLLs are available for the main build
     - name: Build de4dot
       run: dotnet build de4dot/de4dot.sln -c Release
 
     - name: Build
-      run: .\build.bat all
+      run: |
+        (Get-Content extensions\dnSpy.MCP.Server\dnSpy.MCP.Server.csproj) -replace "artifacts\\de4dotEx\\net8\\", "artifacts\\de4dotEx\\net8" | Set-Content extensions\dnSpy.MCP.Server\dnSpy.MCP.Server.csproj
+        .\build.bat all
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
