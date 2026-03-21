@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: geocine/dnSpy.MCP.Server
         submodules: recursive
@@ -28,6 +28,7 @@ jobs:
         dotnet-version: |
           8.0.x
           10.0.x
+        cache: true
 
     # Compile the de4dot submodule so its DLLs are available for the main build
     - name: Build de4dot
