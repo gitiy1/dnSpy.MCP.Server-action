@@ -19,6 +19,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
+        repository: geocine/dnSpy.MCP.Server
         submodules: recursive
 
     - name: Setup .NET
