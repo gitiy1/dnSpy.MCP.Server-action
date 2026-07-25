@@ -16,15 +16,31 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: geocine/dnSpy.MCP.Server
-          submodules: recursive
+          ref: 7fe7f9419c3b48c373cc1b093f36a7fb38c91b46
+          submodules: false
           fetch-depth: 0
 
-      # - name: Setup .NET
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: |
-      #       8.0.x
-      #       10.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore pinned submodules
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          git config --file .gitmodules submodule.dnSpy.Extension.HoLLy.url https://github.com/geocine/dnSpy.Extension.HoLLy.git
+          git submodule sync --recursive
+
+          git submodule update --init --recursive hosts/dnSpy vendors/Echo vendors/de4dotEx
+
+          git submodule update --init --remote --recursive extensions/dnSpy.Extension.HoLLy
+          git -C extensions/dnSpy.Extension.HoLLy fetch origin c5c2b302f324b1ab85c17ab0068406a915c763f8
+          git -C extensions/dnSpy.Extension.HoLLy checkout --detach c5c2b302f324b1ab85c17ab0068406a915c763f8
+          git -C extensions/dnSpy.Extension.HoLLy submodule update --init --recursive
 
       - name: Prepare de4dotEx artifacts
         shell: pwsh
